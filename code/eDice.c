@@ -4,13 +4,11 @@
 
 
 /* define the ports and pins */
-#define BUTTON_PORT PORTA
 #define LED_PORT PORTB
-#define B1_PIN PINA
-#define B1_BIT PA0		// die type incrementor button
-#define B2_PIN PINA
-#define B2_BIT PA1		// die roll button
-
+#define B1_PIN PIND
+#define B1_BIT PD2		// die type incrementor button
+#define B2_PIN PINA		// PINA for board versions 1.0 and 1.1.   PIND for board version 1.2
+#define B2_BIT PA1		// die roll button.  Pin A1 for version 1.0 and 1.1.  Pin D3 for version 1.2
 /* define debounce time (time to wait to see if a button is really pressed) */
 #define DEBOUNCE_TIME 25
 
@@ -35,7 +33,7 @@ main (void)
     uint8_t B1_DONE=0; // whether or not the button is just still being pressed
     uint8_t B2_DONE=0; // ditto
     uint8_t DISPLAY_VALUE=6; // the current number being displayed (D type or random number)
-    uint8_t DTYPE=1; // 0=4, 1=6, 2=8, 3=10, 4=12, 5=20, 6=100
+    uint8_t DTYPE=1; // 0=4, 1=6, 2=8, 3=10, 4=12, 5=20, 6=100 7=2
     uint8_t CURRENT_RANDOM_VALUE=1; // the random number
     uint8_t DISPLAY_MODE=0; // 0= the die type, 1 = the random number
 
@@ -133,7 +131,7 @@ display_number(uint8_t DISPLAY_VALUE, uint8_t DTYPE, uint8_t LDISPLAY_MODE)
 {
    // Define in an array all the numbers that turn on the LEDs in 7segment display
 	uint8_t digits[] = {
-   		0b00111111,  // 0 = .gfEDCBA = 63
+   	0b00111111,  // 0 = .gfEDCBA = 63
 		0b00000110,  // 1 = .gfedCBa = 6
 		0b01011011,  // 2 = .GfEDcBA = 91
 		0b01001111,  // 3 = .GfeDCBA = 79
@@ -192,12 +190,12 @@ display_number(uint8_t DISPLAY_VALUE, uint8_t DTYPE, uint8_t LDISPLAY_MODE)
 void
 init_io()
 {
-	DDRA = 0x00;  // set port A as input
-	BUTTON_PORT = 0xFF;       // set port A with internal pullups
+	DDRA = 0x00;  // set port A as input (only important for version 1.0 and 1.1 of board)
+	PORTA = 0xFF;       // set port A with internal pullups
 	DDRB = 0xFF;  // set Port B as output for segments
 	LED_PORT = 0x00;	    // intialize Port B to low (off)
-	DDRD = 0xFF;  // set port D as output for LED cathodes
-	PORTD = 0x03; // set port D high on cathods (off)
+	DDRD = 0x03;  // set port D1,2 as output for LED cathodes, the rest are inputs
+	PORTD = 0x07; // set port D high on cathods (off) pins 1 and 2.  Set pin D3 with internal pullup
 }
 
 /* 
