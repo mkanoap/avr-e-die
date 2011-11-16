@@ -169,7 +169,7 @@ display_number(uint8_t DISPLAY_VALUE, uint8_t DTYPE, uint8_t LDISPLAY_MODE)
 {
    // Define in an array all the numbers that turn on the LEDs in 7segment display
 	uint8_t digits[] = {
-   	0b00111111,  // 0 = .gfEDCBA = 63
+   	0b00111111,  // 0 = .gFEDCBA = 63
 		0b00000110,  // 1 = .gfedCBa = 6
 		0b01011011,  // 2 = .GfEDcBA = 91
 		0b01001111,  // 3 = .GfeDCBA = 79
@@ -179,9 +179,9 @@ display_number(uint8_t DISPLAY_VALUE, uint8_t DTYPE, uint8_t LDISPLAY_MODE)
 		0b00000111,  // 7 = .gfedCBA = 7
 		0b01111111,  // 8 = .GFEDCBA = 127
 		0b01101111,  // 9 = .GFeDCBA = 111
-		0b01000110,  // T = .GfedcBA = ???
-		0b01110110,  // H = .GFEdCBa = ???
-		0b01000000   // - = .Gfedcba = ???
+		0b01000110,  // T = .GfedCBa = 70
+		0b01110110,  // H = .GFEdCBa = 118
+		0b01000000   // - = .Gfedcba = 64
 	};
 	// LDISPLAY_MODE = local copy of the display mode. 0= the die type, 1 = the random number
 	uint8_t DISPLAY;
@@ -242,7 +242,7 @@ init_io()
 	DDRD = 0x03;  // set port D0,1 as output for LED cathodes, the rest are inputs
 	PORTD = 0x15; // set port D high (off) on cathods on pins D0 and D1.  Set pin D2 and D3 with internal pullup
 
-  // Set Pin 6 (PD2) as the pin to use for this example
+  // Set physical Pin 6 (PD2 or INT0) as the pin to use for the interrupt (wake up from sleep)
   PCMSK |= (1<<PIND2);
 
   // interrupt on INT0 pin falling edge (sensor triggered) 
