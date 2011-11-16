@@ -1,0 +1,4 @@
+Under windows 7, you may encounter an error compiling with avr-gcc based on (but not shown in the error) windows 7 permission.  These steps will allow it to compile under windows 7.
+
+1) mkdir ~/temp
+2) export TMPDIR=~/temp
