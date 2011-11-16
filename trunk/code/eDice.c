@@ -59,7 +59,7 @@ main (void)
 {
     uint8_t DISPLAY_VALUE=6; // the current number being displayed (D type or random number)
     uint8_t DTYPE=1; // 0=4, 1=6, 2=8, 3=10, 4=12, 5=20, 6=100 7=2
-    uint8_t CURRENT_RANDOM_VALUE=1; // the random number
+//    uint8_t CURRENT_RANDOM_VALUE=1; // the random number
     uint8_t DISPLAY_MODE=0; // 0= the die type, 1 = the random number
 	 int IDLE_TIMER=0; // counter of how many .5088 intervals since a button press
 
@@ -196,7 +196,7 @@ display_number(uint8_t DISPLAY_VALUE, uint8_t DTYPE, uint8_t LDISPLAY_MODE)
 	// do the right digit
 	PORTD = 3; // turn off both LEDs by setting both cathods HIGH
 	LED_PORT = WIPE;
-	if (DTYPE==7 & LDISPLAY_MODE==1) { // if it's a D2, show heads and tails
+	if ((DTYPE==7) & (LDISPLAY_MODE==1)) { // if it's a D2, show heads and tails
 		if (DISPLAY==1) { // tails
 			LED_PORT ^= digits[10];
 		} else {
@@ -222,7 +222,7 @@ display_number(uint8_t DISPLAY_VALUE, uint8_t DTYPE, uint8_t LDISPLAY_MODE)
 			PORTD = 2; // turn on the left digit by turning OFF bit 1
 			delay_ms(1);
 		}
-		if (DTYPE==7 & LDISPLAY_MODE==1 & DISPLAY==1) { // if it's a D2, show heads and tails
+		if ((DTYPE==7) & (LDISPLAY_MODE==1) & (DISPLAY==1)) { // if it's a D2, show heads and tails
 			PORTD = 3; // turn off the LEDs by setting both cathods HIGH
 			LED_PORT=WIPE;
 			LED_PORT ^= digits[12];  // show a minus for the bottom of the T in tails
