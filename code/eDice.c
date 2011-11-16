@@ -240,7 +240,7 @@ init_io()
 	DDRB = 0xFF;  // set Port B as output for segments
 	LED_PORT = 0x00;	    // intialize Port B to low (off)
 	DDRD = 0x03;  // set port D0,1 as output for LED cathodes, the rest are inputs
-	PORTD = 0x15; // set port D high on cathods (off) pins 1 and 2.  Set pin D3 and D4 with internal pullup
+	PORTD = 0x15; // set port D high (off) on cathods on pins D0 and D1.  Set pin D2 and D3 with internal pullup
 
   // Set Pin 6 (PD2) as the pin to use for this example
   PCMSK |= (1<<PIND2);
