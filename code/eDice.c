@@ -17,10 +17,10 @@ Distributed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Li
 #define LED_PORT PORTB
 #define B1_PIN PIND   // PIN =  Port input
 #define B1_BIT PD2		// die type incrementor button
-//#define B2_PIN PIND		// PINA for board versions 1.0 and 1.1.   PIND for board version 1.2
-#define B2_PIN PINA		// PINA for board versions 1.0 and 1.1.   PIND for board version 1.2
-// #define B2_BIT PD3		// die roll button.  Pin A1 for version 1.0 and 1.1.  Pin D3 for version 1.2
-#define B2_BIT PA1		// die roll button.  Pin A1 for version 1.0 and 1.1.  Pin D3 for version 1.2
+#define B2_PIN PIND		// PIND for board version 1.2
+// #define B2_PIN PINA		// PINA for board versions 1.0 and 1.1. 
+#define B2_BIT PD3		// die roll button.  Pin D3 for version 1.2
+//#define B2_BIT PA1		// die roll button.  Pin A1 for version 1.0 and 1.1. 
 
 /* define debounce time (time to wait to see if a button is really pressed) */
 #define DEBOUNCE_TIME 25
