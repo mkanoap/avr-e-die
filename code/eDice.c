@@ -23,7 +23,7 @@ Distributed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Li
 //#define B2_BIT PA1		// die roll button.  Pin A1 for version 1.0 and 1.1. 
 
 /* define debounce time (time to wait to see if a button is really pressed) */
-#define DEBOUNCE_TIME 25
+#define DEBOUNCE_TIME 250
 
 /* mode of largest die */
 #define MAX_DIE 7
@@ -39,7 +39,7 @@ uint8_t increment_DTYPE(uint8_t DTYPE, uint8_t DISPLAY_MODE); // increment or sh
 void display_number(uint8_t DISPLAY_VALUE,uint8_t DTYPE,uint8_t DISPLAY_MODE); // show a number on the screen (Dtype or random number depending on DISPLAY_MODE)
 
  /* the types array will be global. MAX_DIE should be index of last value */
-uint8_t DTYPES[] = {4,6,8,10,12,20,100,2};
+uint8_t DTYPES[] = {4,6,9,10,12,20,100,2};
 
 // more globals
 uint8_t B1_DONE=0; // whether or not the button is just still being pressed
@@ -47,18 +47,18 @@ uint8_t B2_DONE=0; // ditto
 
 // Set up an interrupt for when PCINT0 is triggered
 ISR(INT0_vect){
-	cli(); // we are awake now, turn of interrupts and continue to whever we were when we went to sleep
+	cli(); // we are awake now, turn off interrupts and continue to whever we were when we went to sleep
 }
 
-ISR(INT1_vect){
-        cli(); // we are awake now, turn of interrupts and continue to whever we were when we went to sleep
-}
+//ISR(INT1_vect){
+//        cli(); // we are awake now, turn of interrupts and continue to whever we were when we went to sleep
+//}
 
 int
 main (void)
 {
     uint8_t DISPLAY_VALUE=6; // the current number being displayed (D type or random number)
-    uint8_t DTYPE=1; // 0=4, 1=6, 2=8, 3=10, 4=12, 5=20, 6=100 7=2
+	 uint8_t DTYPE=1; // 0=4, 1=6, 2=8, 3=10, 4=12, 5=20, 6=100 7=2
 //    uint8_t CURRENT_RANDOM_VALUE=1; // the random number
     uint8_t DISPLAY_MODE=0; // 0= the die type, 1 = the random number
 	 int IDLE_TIMER=0; // counter of how many .5088 intervals since a button press
@@ -165,7 +165,7 @@ increment_DTYPE(uint8_t loDTYPE, uint8_t loDISPLAY_MODE)
  *
  */
 void
-display_number(uint8_t DISPLAY_VALUE, uint8_t DTYPE, uint8_t LDISPLAY_MODE)
+display_number(uint8_t DISPLAY_VALUE, uint8_t LDTYPE, uint8_t LDISPLAY_MODE)
 {
    // Define in an array all the numbers that turn on the LEDs in 7segment display
 	uint8_t digits[] = {
@@ -190,13 +190,13 @@ display_number(uint8_t DISPLAY_VALUE, uint8_t DTYPE, uint8_t LDISPLAY_MODE)
 		DISPLAY=DISPLAY_VALUE; // we are showing the random number
 		WIPE = 0x00; // turn off all the digets, including the decimal
 	} else {
-		DISPLAY=DTYPES[DTYPE]; // we are displaying the die type
+		DISPLAY=DTYPES[LDTYPE]; // we are displaying the die type
 		WIPE = 0b10000000; // turn on the decimal point to indicate Die type mode
 	}
 	// do the right digit
 	PORTD |= 3; // turn off both LEDs by setting both cathods HIGH
 	LED_PORT = WIPE;
-	if ((DTYPE==7) & (LDISPLAY_MODE==1)) { // if it's a D2, show heads and tails
+	if ((LDTYPE==7) & (LDISPLAY_MODE==1)) { // if it's a D2, show heads and tails
 		if (DISPLAY==1) { // tails
 			LED_PORT ^= digits[10];
 		} else {
@@ -222,7 +222,7 @@ display_number(uint8_t DISPLAY_VALUE, uint8_t DTYPE, uint8_t LDISPLAY_MODE)
 			PORTD &= ~(1); // turn on the left digit by turning OFF bit 0
 			delay_ms(1);
 		}
-		if ((DTYPE==7) & (LDISPLAY_MODE==1) & (DISPLAY==1)) { // if it's a D2, show heads and tails
+		if ((LDTYPE==7) & (LDISPLAY_MODE==1) & (DISPLAY==1)) { // if it's a D2, show heads and tails
 			PORTD |= 3; // turn off the LEDs by setting both cathods HIGH
 			LED_PORT=WIPE;
 			LED_PORT ^= digits[12];  // show a minus for the bottom of the T in tails
@@ -235,8 +235,8 @@ display_number(uint8_t DISPLAY_VALUE, uint8_t DTYPE, uint8_t LDISPLAY_MODE)
 void
 init_io()
 {
-	DDRA = 0x00;  // set port A as input (only important for version 1.0 and 1.1 of board)
-	PORTA = 0xFF;       // set port A with internal pullups
+//	DDRA = 0x00;  // set port A as input (only important for version 1.0 and 1.1 of board)
+//	PORTA = 0xFF;       // set port A with internal pullups
 	DDRB = 0xFF;  // set Port B as output for segments
 	LED_PORT = 0x00;	    // intialize Port B to low (off)
 	DDRD = 0x03;  // set port D0,1 as output for LED cathodes, the rest are inputs
@@ -250,6 +250,7 @@ init_io()
 
   // turn on interrupts!
   GIMSK  |= (1<<INT0);
+	cli(); // we are awake now, turn off interrupts and continue to whever we were when we went to sleep
 
 }
 
