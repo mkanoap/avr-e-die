@@ -108,7 +108,7 @@ main (void)
 					if (IDLE_TIMER > TIMEOUT) // if the IDLE time has passed, go to sleep
 					{
 					//	DISPLAY_VALUE=88; // replace with sleep code
-						PORTD = 3; // turn off both LEDs by setting both cathods HIGH
+						PORTD |= 3; // turn off both LEDs by setting both cathods HIGH
 						set_sleep_mode(SLEEP_MODE_PWR_DOWN); //set sleep mode
 						sei(); //enable interrupt
 						sleep_enable();
@@ -194,7 +194,7 @@ display_number(uint8_t DISPLAY_VALUE, uint8_t DTYPE, uint8_t LDISPLAY_MODE)
 		WIPE = 0b10000000; // turn on the decimal point to indicate Die type mode
 	}
 	// do the right digit
-	PORTD = 3; // turn off both LEDs by setting both cathods HIGH
+	PORTD |= 3; // turn off both LEDs by setting both cathods HIGH
 	LED_PORT = WIPE;
 	if ((DTYPE==7) & (LDISPLAY_MODE==1)) { // if it's a D2, show heads and tails
 		if (DISPLAY==1) { // tails
@@ -207,26 +207,26 @@ display_number(uint8_t DISPLAY_VALUE, uint8_t DTYPE, uint8_t LDISPLAY_MODE)
 	} else {
 		LED_PORT ^= digits[DISPLAY % 10]; // set right digit
 	}
-	PORTD = 1; // turn on right digit by turning OFF bit 2
+	PORTD &= ~(1 << 1); // turn on right digit by turning OFF bit 1
     delay_ms(1);
 
 	// If appropriate, do the left digit
 	if (B2_DONE==1) { // if the roll button is currently held down
-		PORTD = 2; // turn on the left digit by turning OFF bit 1
+		PORTD &= ~(1); // turn on the left digit by turning OFF bit 0
 		delay_ms(1);
 	} else {
 		if ((DISPLAY/10)>0) {
-			PORTD = 3; // turn off the LEDs by setting both cathods HIGH
+			PORTD != 3; // turn off the LEDs by setting both cathods HIGH
 			LED_PORT=WIPE;
 			LED_PORT ^= digits[(DISPLAY/10) % 10];  // display second diget on left
-			PORTD = 2; // turn on the left digit by turning OFF bit 1
+			PORTD &= ~(1); // turn on the left digit by turning OFF bit 0
 			delay_ms(1);
 		}
 		if ((DTYPE==7) & (LDISPLAY_MODE==1) & (DISPLAY==1)) { // if it's a D2, show heads and tails
-			PORTD = 3; // turn off the LEDs by setting both cathods HIGH
+			PORTD |= 3; // turn off the LEDs by setting both cathods HIGH
 			LED_PORT=WIPE;
 			LED_PORT ^= digits[12];  // show a minus for the bottom of the T in tails
-			PORTD = 2; // turn on the left digit by turning OFF bit 1
+			PORTD &= ~(1); // turn on the left digit by turning OFF bit 0
 			delay_ms(1);
 		}
 	}
@@ -240,7 +240,7 @@ init_io()
 	DDRB = 0xFF;  // set Port B as output for segments
 	LED_PORT = 0x00;	    // intialize Port B to low (off)
 	DDRD = 0x03;  // set port D0,1 as output for LED cathodes, the rest are inputs
-	PORTD = 0x15; // set port D high (off) on cathods on pins D0 and D1.  Set pin D2 and D3 with internal pullup
+	PORTD = 0x0F; // set port D high (off) on cathods on pins D0 and D1.  Set pin D2 and D3 with internal pullup
 
   // Set physical Pin 6 (PD2 or INT0) as the pin to use for the interrupt (wake up from sleep)
   PCMSK |= (1<<PIND2);
@@ -249,7 +249,7 @@ init_io()
   MCUCR = (0<<ISC01) | (0<<ISC00);
 
   // turn on interrupts!
-  GIMSK  |= (1<<INT0);
+//  GIMSK  |= (1<<INT0);
 
 }
 
