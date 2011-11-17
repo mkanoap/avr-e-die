@@ -39,7 +39,7 @@ uint8_t increment_DTYPE(uint8_t DTYPE, uint8_t DISPLAY_MODE); // increment or sh
 void display_number(uint8_t DISPLAY_VALUE,uint8_t DTYPE,uint8_t DISPLAY_MODE); // show a number on the screen (Dtype or random number depending on DISPLAY_MODE)
 
  /* the types array will be global. MAX_DIE should be index of last value */
-uint8_t DTYPES[] = {4,6,9,10,12,20,100,2};
+uint8_t DTYPES[] = {4,6,8,10,12,20,100,2};
 
 // more globals
 uint8_t B1_DONE=0; // whether or not the button is just still being pressed
@@ -58,7 +58,7 @@ int
 main (void)
 {
     uint8_t DISPLAY_VALUE=6; // the current number being displayed (D type or random number)
-	 uint8_t DTYPE=1; // 0=4, 1=6, 2=8, 3=10, 4=12, 5=20, 6=100 7=2
+	 uint8_t DTYPE=4; // 0=4, 1=6, 2=8, 3=10, 4=12, 5=20, 6=100 7=2
 //    uint8_t CURRENT_RANDOM_VALUE=1; // the random number
     uint8_t DISPLAY_MODE=0; // 0= the die type, 1 = the random number
 	 int IDLE_TIMER=0; // counter of how many .5088 intervals since a button press
@@ -194,7 +194,8 @@ display_number(uint8_t DISPLAY_VALUE, uint8_t LDTYPE, uint8_t LDISPLAY_MODE)
 		WIPE = 0b10000000; // turn on the decimal point to indicate Die type mode
 	}
 	// do the right digit
-	PORTD |= 3; // turn off both LEDs by setting both cathods HIGH
+//	PORTD |= 3; // turn off both LEDs by setting both cathods HIGH
+	PORTD = 0x0F; // turn off the LEDs by setting both cathods HIGH
 	LED_PORT = WIPE;
 	if ((LDTYPE==7) & (LDISPLAY_MODE==1)) { // if it's a D2, show heads and tails
 		if (DISPLAY==1) { // tails
@@ -212,15 +213,19 @@ display_number(uint8_t DISPLAY_VALUE, uint8_t LDTYPE, uint8_t LDISPLAY_MODE)
 
 	// If appropriate, do the left digit
 	if (B2_DONE==1) { // if the roll button is currently held down
+	   PORTD |= 3; // turn off both LEDs by setting both cathods HIGH
 		PORTD &= ~(1); // turn on the left digit by turning OFF bit 0
 		delay_ms(1);
 	} else {
 		if ((DISPLAY/10)>0) {
-			PORTD != 3; // turn off the LEDs by setting both cathods HIGH
+//			PORTD != 3; // turn off the LEDs by setting both cathods HIGH
+			PORTD = 0x0F; // turn off the LEDs by setting both cathods HIGH
 			LED_PORT=WIPE;
 			LED_PORT ^= digits[(DISPLAY/10) % 10];  // display second diget on left
 			PORTD &= ~(1); // turn on the left digit by turning OFF bit 0
+			PORTD = 0x0E; // turn on the left digit by turning OFF bit 0
 			delay_ms(1);
+			LED_PORT=0x00;
 		}
 		if ((LDTYPE==7) & (LDISPLAY_MODE==1) & (DISPLAY==1)) { // if it's a D2, show heads and tails
 			PORTD |= 3; // turn off the LEDs by setting both cathods HIGH
