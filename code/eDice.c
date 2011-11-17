@@ -249,7 +249,7 @@ init_io()
   MCUCR = (0<<ISC01) | (0<<ISC00);
 
   // turn on interrupts!
-//  GIMSK  |= (1<<INT0);
+  GIMSK  |= (1<<INT0);
 
 }
 
