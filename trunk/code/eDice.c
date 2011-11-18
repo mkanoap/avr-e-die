@@ -24,6 +24,7 @@ Distributed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Li
 
 /* define debounce time (time to wait to see if a button is really pressed) */
 #define DEBOUNCE_TIME 25
+#define DELAY_TIME 10 
 
 /* mode of largest die */
 #define MAX_DIE 7
@@ -206,20 +207,20 @@ display_number(uint8_t DISPLAY_VALUE, uint8_t LDTYPE, uint8_t LDISPLAY_MODE)
 		LED_PORT ^= digits[DISPLAY % 10]; // set right digit
 	}
 	PORTD &= ~(1 << 1); // turn on right digit by turning OFF bit 1
-    delay_ms(1);
+    delay_ms(DELAY_TIME);
 
 	// If appropriate, do the left digit
 	if (B2_DONE==1) { // if the roll button is currently held down
 		PORTD = 0x0F; // turn off the LEDs by setting both cathods HIGH, while leaving buttons as input
 		PORTD &= ~(1); // turn on the left digit by turning OFF bit 0
-		delay_ms(1);
+		delay_ms(DELAY_TIME);
 	} else {
 		if ((DISPLAY/10)>0) {
 			PORTD = 0x0F; // turn off the LEDs by setting both cathods HIGH, while leaving buttons as input
 			LED_PORT=WIPE;
 			LED_PORT ^= digits[(DISPLAY/10) % 10];  // display second diget on left
 			PORTD = 0x0E; // turn on the left digit by turning OFF bit 0
-			delay_ms(1);
+			delay_ms(DELAY_TIME);
 			LED_PORT=0x00;
 		}
 		if ((LDTYPE==7) & (LDISPLAY_MODE==1) & (DISPLAY==1)) { // if it's a D2, show heads and tails
@@ -229,7 +230,7 @@ display_number(uint8_t DISPLAY_VALUE, uint8_t LDTYPE, uint8_t LDISPLAY_MODE)
 			LED_PORT ^= digits[12];  // show a minus for the bottom of the T in tails
 //			PORTD &= ~(1); // turn on the left digit by turning OFF bit 0
 			PORTD = 0x0E; // turn on the left digit by turning OFF bit 0
-			delay_ms(1);
+			delay_ms(DELAY_TIME);
 		}
 	}
 }
