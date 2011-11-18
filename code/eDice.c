@@ -23,7 +23,7 @@ Distributed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Li
 //#define B2_BIT PA1		// die roll button.  Pin A1 for version 1.0 and 1.1. 
 
 /* define debounce time (time to wait to see if a button is really pressed) */
-#define DEBOUNCE_TIME 250
+#define DEBOUNCE_TIME 25
 
 /* mode of largest die */
 #define MAX_DIE 7
@@ -58,7 +58,7 @@ int
 main (void)
 {
     uint8_t DISPLAY_VALUE=6; // the current number being displayed (D type or random number)
-	 uint8_t DTYPE=4; // 0=4, 1=6, 2=8, 3=10, 4=12, 5=20, 6=100 7=2
+	 uint8_t DTYPE=1; // 0=4, 1=6, 2=8, 3=10, 4=12, 5=20, 6=100 7=2
 //    uint8_t CURRENT_RANDOM_VALUE=1; // the random number
     uint8_t DISPLAY_MODE=0; // 0= the die type, 1 = the random number
 	 int IDLE_TIMER=0; // counter of how many .5088 intervals since a button press
@@ -71,7 +71,6 @@ main (void)
         init_io();
         while (1)                       
         {
-//DEBUG_DTYPE=DTYPES[DTYPE];
 
                 if (button_is_pressed(B1_PIN, B1_BIT)) // increment dice type
                 {
@@ -89,7 +88,6 @@ main (void)
                 {
                         if (B2_DONE==0)
                         {
-//                            DISPLAY_VALUE=CURRENT_RANDOM_VALUE; // grab the current random number and save it
 									 DISPLAY_VALUE=(TCNT1 % DTYPES[DTYPE]) + 1; // grab a random number from the counter
                             B2_DONE=1; // mark that the button has been pused to prevent rolling again
                             DISPLAY_MODE=1; // when displaying, show the random value chosen
@@ -108,7 +106,7 @@ main (void)
 					if (IDLE_TIMER > TIMEOUT) // if the IDLE time has passed, go to sleep
 					{
 					//	DISPLAY_VALUE=88; // replace with sleep code
-						PORTD |= 3; // turn off both LEDs by setting both cathods HIGH
+						PORTD = 0x0F; // turn off the LEDs by setting both cathods HIGH, while leaving buttons as input
 						set_sleep_mode(SLEEP_MODE_PWR_DOWN); //set sleep mode
 						sei(); //enable interrupt
 						sleep_enable();
@@ -194,7 +192,6 @@ display_number(uint8_t DISPLAY_VALUE, uint8_t LDTYPE, uint8_t LDISPLAY_MODE)
 		WIPE = 0b10000000; // turn on the decimal point to indicate Die type mode
 	}
 	// do the right digit
-//	PORTD |= 3; // turn off both LEDs by setting both cathods HIGH
 	PORTD = 0x0F; // turn off the LEDs by setting both cathods HIGH
 	LED_PORT = WIPE;
 	if ((LDTYPE==7) & (LDISPLAY_MODE==1)) { // if it's a D2, show heads and tails
@@ -213,25 +210,25 @@ display_number(uint8_t DISPLAY_VALUE, uint8_t LDTYPE, uint8_t LDISPLAY_MODE)
 
 	// If appropriate, do the left digit
 	if (B2_DONE==1) { // if the roll button is currently held down
-	   PORTD |= 3; // turn off both LEDs by setting both cathods HIGH
+		PORTD = 0x0F; // turn off the LEDs by setting both cathods HIGH, while leaving buttons as input
 		PORTD &= ~(1); // turn on the left digit by turning OFF bit 0
 		delay_ms(1);
 	} else {
 		if ((DISPLAY/10)>0) {
-//			PORTD != 3; // turn off the LEDs by setting both cathods HIGH
-			PORTD = 0x0F; // turn off the LEDs by setting both cathods HIGH
+			PORTD = 0x0F; // turn off the LEDs by setting both cathods HIGH, while leaving buttons as input
 			LED_PORT=WIPE;
 			LED_PORT ^= digits[(DISPLAY/10) % 10];  // display second diget on left
-			PORTD &= ~(1); // turn on the left digit by turning OFF bit 0
 			PORTD = 0x0E; // turn on the left digit by turning OFF bit 0
 			delay_ms(1);
 			LED_PORT=0x00;
 		}
 		if ((LDTYPE==7) & (LDISPLAY_MODE==1) & (DISPLAY==1)) { // if it's a D2, show heads and tails
-			PORTD |= 3; // turn off the LEDs by setting both cathods HIGH
+//			PORTD |= 3; // turn off the LEDs by setting both cathods HIGH
+			PORTD = 0x0F; // turn off the LEDs by setting both cathods HIGH
 			LED_PORT=WIPE;
 			LED_PORT ^= digits[12];  // show a minus for the bottom of the T in tails
-			PORTD &= ~(1); // turn on the left digit by turning OFF bit 0
+//			PORTD &= ~(1); // turn on the left digit by turning OFF bit 0
+			PORTD = 0x0E; // turn on the left digit by turning OFF bit 0
 			delay_ms(1);
 		}
 	}
@@ -240,8 +237,8 @@ display_number(uint8_t DISPLAY_VALUE, uint8_t LDTYPE, uint8_t LDISPLAY_MODE)
 void
 init_io()
 {
-//	DDRA = 0x00;  // set port A as input (only important for version 1.0 and 1.1 of board)
-//	PORTA = 0xFF;       // set port A with internal pullups
+	DDRA = 0x00;  // set port A as input (only important for version 1.0 and 1.1 of board)
+	PORTA = 0xFF;       // set port A with internal pullups
 	DDRB = 0xFF;  // set Port B as output for segments
 	LED_PORT = 0x00;	    // intialize Port B to low (off)
 	DDRD = 0x03;  // set port D0,1 as output for LED cathodes, the rest are inputs
